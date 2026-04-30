@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PIBULSE | Predict & Earn</title>
+    <style>
+        :root {
+            --main-purple: #6d1e7f;
+            --accent-orange: #ffa500;
+            --dark-bg: #0b0e11;
+            --card-bg: #1e2329;
+            --border: #474d57;
+            --success: #28a745;
+            --danger: #dc3545;
+            --gold: #ffd700;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--dark-bg);
+            color: #eaeae7;
+            text-align: center;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--main-purple) 0%, #4a0e5a 100%);
+            padding: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            border-bottom: 3px solid var(--accent-orange);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #848e9c;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: var(--accent-orange);
+            color: #000;
+            border-color: var(--accent-orange);
+        }
+        
+        .container { max-width: 600px; margin: auto; }
+        
+        .content-box {
+            background: var(--card-bg);
+            margin: 15px auto;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-main {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #ff8c00 100%);
+            color: #000;
+        }
+        
+        .btn-up { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); color: white; }
+        .btn-down { background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); color: white; }
+        
+        .hidden { display: none !important; }
+        
+        .pi-balance {
+            background: linear-gradient(135deg, #2a2f3a 0%, #1a1f26 100%);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gold);
+        }
+        
+        .balance-amount { font-size: 2em; color: var(--gold); font-weight: bold; }
+        
+        .weekly-prize {
+            background: linear-gradient(135deg, #ffd70020 0%, #ffa50020 100%);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid var(--gold);
+        }
+        
+        .prize-amount { font-size: 2.5em; color: var(--gold); font-weight: bold; }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .leaderboard-table th { color: var(--accent-orange); }
+        .leaderboard-table tr.leader { background: #ffd70020; }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-orange);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @media (max-width: 768px) {
+            header { font-size: 22px; padding: 15px; flex-direction: column; gap: 10px; }
+            .content-box { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <span>🔮 PIBULSE</span>
+    <div class="lang-switch">
+        <button class="lang-btn active" id="btn_en" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" id="btn_ar" onclick="setLanguage('ar')">AR</button>
+    </div>
+</header>
+
+<div class="container">
+    <div id="main_screen">
+        <div class="pi-balance">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <p style="font-size: 14px;" id="welcome_label">👤 Welcome</p>
+                    <p style="font-size: 12px; color: #848e9c;" id="balance_label">Your Balance</p>
+                </div>
+                <div>
+                    <div class="balance-amount" id="pi_balance">0</div>
+                    <p style="font-size: 12px;">π</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="weekly-prize">
+            <p id="prize_title">🏆 Weekly Prize 🏆</p>
+            <div class="prize-amount">5 π</div>
+            <p id="prize_desc" style="font-size: 12px;">For the best predictor of the week</p>
+            <div id="week_progress" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="content-box">
+            <h3 id="round_title">🎲 Current Round</h3>
+            <div id="timer_display" style="font-size: 20px; margin: 10px 0;">⏰ --:--:--</div>
+            <div style="font-size: 14px; color: var(--gold);" id="fee_label">Entry Fee: 1 π</div>
+            
+            <div id="price_val" style="font-size: 2.5em; color: var(--accent-orange); font-weight: bold; margin: 15px 0;">$0.0000</div>
+            
+            <div id="not_logged_in">
+                <p id="login_msg">🔐 Please sign in to play</p>
+                <button onclick="authenticateWithPi()" class="btn btn-main" id="login_btn">
+                    Sign in with Pi Network
+                </button>
+            </div>
+            
+            <div id="vote_area" class="hidden">
+                <p id="predict_label">📈 Predict next price movement:</p>
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="enterRound('up')" class="btn btn-up" id="up_btn">🚀 UP ↑</button>
+                    <button onclick="enterRound('down')" class="btn btn-down" id="down_btn">📉 DOWN ↓</button>
+                </div>
+            </div>
+            
+            <div id="wait_msg" class="hidden">
+                <div style="background: #28a74520; padding: 15px; border-radius: 12px;">
+                    <div class="loading-spinner"></div>
+                    <p style="color: #28a745; margin-top: 10px;" id="wait_label">✅ Processing...</p>
+                </div>
+            </div>
+            
+            <div id="last_result" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="content-box">
+            <h3 style="color: var(--gold);" id="leader_title">🏆 Weekly Leaderboard</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th id="th_user">👤 User</th>
+                        <th id="th_correct">✅ Correct</th>
+                        <th id="th_accuracy">🎯 Accuracy</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard_body">
+                    <tr><td colspan="3">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <button onclick="logout()" style="background: #dc3545;" class="btn hidden" id="logout_btn">🚪 Sign Out</button>
+    </div>
+</div>
+
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script>
+    // ==================== الترجمات ====================
+    const translations = {
+        en: {
+            welcome_label: "👤 Welcome",
+            balance_label: "Your Balance",
+            prize_title: "🏆 Weekly Prize 🏆",
+            prize_desc: "For the best predictor of the week",
+            round_title: "🎲 Current Round",
+            fee_label: "Entry Fee: 1 π",
+            predict_label: "📈 Predict next price movement:",
+            up_btn: "🚀 UP ↑",
+            down_btn: "📉 DOWN ↓",
+            wait_label: "✅ Processing...",
+            leader_title: "🏆 Weekly Leaderboard",
+            th_user: "👤 User",
+            th_correct: "✅ Correct",
+            th_accuracy: "🎯 Accuracy",
+            logout_btn: "🚪 Sign Out",
+            login_msg: "🔐 Please sign in to play",
+            auth_btn: "Sign in with Pi Network",
+            toast_login_success: "Welcome back!",
+            toast_login_error: "Authentication failed",
+            toast_logout: "Logged out"
+        },
+        ar: {
+            welcome_label: "👤 مرحباً",
+            balance_label: "رصيدك",
+            prize_title: "🏆 الجائزة الأسبوعية 🏆",
+            prize_desc: "لأفضل متوقع هذا الأسبوع",
+            round_title: "🎲 الجولة الحالية",
+            fee_label: "رسوم الدخول: 1 π",
+            predict_label: "📈 توقع حركة السعر التالية:",
+            up_btn: "🚀 صعود ↑",
+            down_btn: "📉 هبوط ↓",
+            wait_label: "✅ جاري المعالجة...",
+            leader_title: "🏆 ترتيب هذا الأسبوع",
+            th_user: "👤 المستخدم",
+            th_correct: "✅ صحيحات",
+            th_accuracy: "🎯 الدقة",
+            logout_btn: "🚪 تسجيل الخروج",
+            login_msg: "🔐 يرجى تسجيل الدخول للعب",
+            auth_btn: "تسجيل الدخول عبر Pi Network",
+            toast_login_success: "مرحباً بك مجدداً!",
+            toast_login_error: "فشل تسجيل الدخول",
+            toast_logout: "تم تسجيل الخروج"
+        }
+    };
+    
+    let currentLang = 'en';
+    let piUser = null;
+    const BACKEND_URL = window.location.origin;
+
+    // ==================== وظائف التحكم بالواجهة ====================
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        document.getElementById('btn_en').classList.toggle('active', lang === 'en');
+        document.getElementById('btn_ar').classList.toggle('active', lang === 'ar');
+        
+        const t = translations[lang];
+        for (let key in t) {
+            const el = document.getElementById(key);
+            if (el) el.innerText = t[key];
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.background = type === 'error' ? '#dc3545' : '#28a745';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ==================== الربط مع Pi SDK والسيرفر ====================
+    const Pi = window.Pi;
+
+    async function authenticateWithPi() {
+        try {
+            // تفعيل الساندبوكس للاختبار (اجعلها false عند النشر الفعلي)
+            Pi.init({ version: "2.0", sandbox: true });
+
+            const scopes = ['username', 'payments'];
+            const onIncompletePaymentFound = (payment) => { console.log("Pending payment found"); };
+
+            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+            
+            if (auth && auth.user) {
+                // إرسال البيانات للسيرفر (MongoDB)
+                const response = await fetch(`${BACKEND_URL}/api/user/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: auth.user.uid,
+                        username: auth.user.username
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    piUser = result.user;
+                    updateUI(true);
+                    showToast(translations[currentLang].toast_login_success);
+                }
+            }
+        } catch (error) {
+            console.error("Auth Error:", error);
+            showToast(translations[currentLang].toast_login_error, "error");
+        }
+    }
+
+    function updateUI(isLoggedIn) {
+        document.getElementById('not_logged_in').classList.toggle('hidden', isLoggedIn);
+        document.getElementById('vote_area').classList.toggle('hidden', !isLoggedIn);
+        document.getElementById('logout_btn').classList.toggle('hidden', !isLoggedIn);
+        
+        if (isLoggedIn && piUser) {
+            document.getElementById('pi_balance').innerText = piUser.balance.toFixed(2);
+            document.getElementById('welcome_label').innerText = `👤 ${piUser.username}`;
+        }
+    }
+
+    async function updatePrice() {
+        try {
+            const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');
+            const data = await res.json();
+            const price = data['pi-network'].usd;
+            document.getElementById('price_val').innerText = `$${price.toFixed(4)}`;
+        } catch (e) {
+            console.log("Price fetch error");
+        }
+    }
+
+    function logout() {
+        piUser = null;
+        updateUI(false);
+        showToast(translations[currentLang].toast_logout);
+    }
+
+    // تشغيل عند التحميل
+    window.onload = () => {
+        setLanguage('en');
+        updatePrice();
+        setInterval(updatePrice, 30000);
+    };
+</script>
+</body>
+</html>
