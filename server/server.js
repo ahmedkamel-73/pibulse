@@ -1,66 +1,59 @@
-import express from 'express';
-import cors from 'cors';
-import fetch from 'node-fetch';
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-
+// Cloudflare Worker - نفس العقل بس يشتغل على Cloudflare
 let currentPrice = 0.38;
 let roundStartPrice = 0.38;
 let roundId = 1;
-let predictions = []; // {user, dir, priceAt, roundId, time}
-let leaderboard = {}; // {username: xp}
+let predictions = [];
+let leaderboard = {};
 
 async function getPiPrice(){
   try{
     const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');
     const d = await r.json();
     currentPrice = d['pi-network'].usd;
-  }catch(e){ console.log('price error'); }
+  }catch(e){}
 }
 
-// كل 60 ثانية اقفل الجولة واحسب الفايز
-setInterval(async () => {
-  const oldPrice = roundStartPrice;
-  await getPiPrice();
-  const newPrice = currentPrice;
+export default {
+  async fetch(request, env, ctx){
+    const url = new URL(request.url);
 
-  // احسب الفائزين بشفافية
-  predictions.filter(p => p.roundId === roundId).forEach(p => {
-    const win = (p.dir === 'up' && newPrice > oldPrice) || (p.dir === 'down' && newPrice < oldPrice);
-    if(win){
-      leaderboard[p.user] = (leaderboard[p.user] || 0) + 10;
+    // CORS
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json'
+    };
+    if(request.method === 'OPTIONS') return new Response(null, {headers});
+
+    if(url.pathname === '/api/price'){
+      await getPiPrice();
+      return new Response(JSON.stringify({ price: currentPrice, roundId, roundStartPrice }), {headers});
     }
-  });
 
-  console.log(`Round ${roundId} closed: ${oldPrice} -> ${newPrice} | Winners: ${Object.keys(leaderboard).length}`);
+    if(url.pathname === '/api/predict' && request.method === 'POST'){
+      const {user, dir} = await request.json();
+      predictions.push({user, dir, priceAt: currentPrice, roundId, time: new Date().toISOString()});
+      return new Response(JSON.stringify({ok:true, roundId}), {headers});
+    }
 
-  roundId++;
-  roundStartPrice = newPrice;
-  predictions = predictions.filter(p => p.roundId >= roundId - 5); // نحتفظ باخر 5 جولات للشفافية
+    if(url.pathname === '/api/leaderboard'){
+      const sorted = Object.entries(leaderboard).sort((a,b)=>b[1]-a[1]);
+      return new Response(JSON.stringify({leaderboard: sorted, predictions: predictions.slice(-20)}), {headers});
+    }
 
-}, 60000);
-
-app.get('/api/price', (req,res)=>{
-  res.json({ price: currentPrice, roundId, roundStartPrice, time: new Date() });
-});
-
-app.post('/api/predict', (req,res)=>{
-  const { user, dir } = req.body;
-  predictions.push({ user: user || 'anon', dir, priceAt: currentPrice, roundId, time: new Date().toISOString() });
-  res.json({ ok:true, roundId, priceAt: currentPrice });
-});
-
-app.get('/api/leaderboard', (req,res)=>{
-  const sorted = Object.entries(leaderboard).sort((a,b)=>b[1]-a[1]).slice(0,20);
-  res.json({ leaderboard: sorted, predictions: predictions.slice(-20) }); // اخر 20 توقع للشفافية
-});
-
-app.get('/api/round', (req,res)=>{
-  res.json({ roundId, roundStartPrice, currentPrice, predictions: predictions.filter(p=>p.roundId===roundId) });
-});
-
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, ()=> console.log('PIBULSE Server running on '+PORT));
+    // اي حاجة تانية رجع الـ index.html
+    return env.ASSETS.fetch(request);
+  },
+  async scheduled(event, env, ctx){
+    // ده اللي بيحسب الفائز كل دقيقة اتوماتيك في Cloudflare
+    const oldPrice = roundStartPrice;
+    await getPiPrice();
+    const newPrice = currentPrice;
+    predictions.filter(p=>p.roundId===roundId).forEach(p=>{
+      const win = (p.dir==='up' && newPrice>oldPrice) || (p.dir==='down' && newPrice<oldPrice);
+      if(win) leaderboard[p.user] = (leaderboard[p.user]||0)+10;
+    });
+    roundId++; roundStartPrice = newPrice;
+  }
+}
