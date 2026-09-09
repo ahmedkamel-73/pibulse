@@ -1,0 +1,16 @@
+{
+  "name": "PIBULSE - PI Prediction",
+  "short_name": "PIBULSE",
+  "description": "Predict PI price - Free skill-based game for Pi Network",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#7c4dff",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/6001/6001369.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
