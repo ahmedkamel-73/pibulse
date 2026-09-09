@@ -23,11 +23,12 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 .btn{padding:18px;border-radius:16px;border:0;font-size:16px;font-weight:900;cursor:pointer;transition:.2s;opacity:0.5;pointer-events:none}
 .btn.active{opacity:1;pointer-events:auto}
-.btn:active{transform:scale(0.97)}
 .up{background:linear-gradient(180deg,#00e676,#00a152);color:#000}
 .down{background:linear-gradient(180deg,#ff5252,#b71c1c);color:#fff}
 .pi-login{width:100%;padding:16px;border-radius:14px;border:0;background:linear-gradient(90deg,var(--pi),#9c7cff);color:#fff;font-weight:900;font-size:14px;cursor:pointer;margin-top:14px}
 .status{margin-top:14px;padding:12px;border-radius:12px;background:#101015;border:1px dashed #2a2a38;color:#c7c7d1;font-size:12px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;direction:ltr}
+.ad-box{margin-top:16px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.08);padding:0;overflow:hidden;text-align:center}
+.ad-box.label{font-size:10px;color:#a99cff;padding:6px;background:rgba(124,77,255,0.15)}
 .footer{text-align:center;padding:20px;color:#666;font-size:11px;border-top:1px solid #1a1a24;margin-top:20px}
 .footer a{color:var(--pi);text-decoration:none;margin:0 8px}
 </style>
@@ -41,70 +42,70 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 <div style="margin-top:16px"><div style="color:#9e9eaa;font-size:11px;text-align:center" id="liveTxt">● PI NETWORK - LIVE</div><div class="price" id="price">Loading PI Price...</div><div style="text-align:center;color:#00e5ff;font-weight:700;font-size:13px" id="timer">Next round: 60s</div></div>
 <button class="pi-login" id="loginBtn" onclick="loginPi()">🔗 Connect Pi Wallet to Play</button>
 <div class="btns"><button class="btn up" id="upBtn" onclick="play('up')">📈 UP</button><button class="btn down" id="downBtn" onclick="play('down')">📉 DOWN</button></div>
-<div class="status" id="status">Connect your Pi Wallet first - Real wallet required</div>
+<div class="status" id="status">Connect Pi Wallet - Real wallet required</div>
 </div>
+
+<!-- PI AD NETWORK - مهم جدا لقبول Pi -->
+<div class="ad-box">
+<div class="label">Pi Ad Network - Sponsored</div>
+<div id="pi-ad-container" style="min-height:90px;display:flex;align-items:center;justify-content:center;background:#0f0f14;color:#666;font-size:11px">
+Loading Pi Ad...
+</div>
+</div>
+
 <div class="glass" style="padding:14px"><h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px">🏆 Live Round - Transparent</h3><div id="board">No data yet</div></div>
 </div>
-<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE - Real Wallet Linked</footer>
+<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE - Real Wallet + Pi Ads</footer>
 <script>
 let lang=localStorage.getItem('pibulse_lang')||'en';
-let piUser=null; // {username, wallet_address, uid, accessToken}
-const t={en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',up:'📈 UP',down:'📉 DOWN',connect:'🔗 Connect Pi Wallet to Play',connected:'Connected: ',need:'Connect your Pi Wallet first',ready:'Wallet connected - Predict now!',btn:'العربية',noPts:'No points'},ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'الجولة:',up:'📈 صعود',down:'📉 هبوط',connect:'🔗 اربط محفظة Pi للعب',connected:'متصل: ',need:'اربط محفظتك أولا',ready:'المحفظة مربوطة - توقع الآن',btn:'English',noPts:'انتهت النقاط'}};
+let piUser=null;
+const t={en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',up:'📈 UP',down:'📉 DOWN',connect:'🔗 Connect Pi Wallet to Play',need:'Connect your Pi Wallet first',ready:'Wallet connected - Predict now!',btn:'العربية',noPts:'No points'},ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'الجولة:',up:'📈 صعود',down:'📉 هبوط',connect:'🔗 اربط محفظة Pi للعب',need:'اربط محفظتك أولا',ready:'المحفظة مربوطة - توقع الآن',btn:'English',noPts:'انتهت النقاط'}};
 function applyLang(){document.getElementById('html').dir=lang=='ar'?'rtl':'ltr';document.getElementById('ptsTxt').innerText=t[lang].pts;document.getElementById('liveTxt').innerText=t[lang].live;document.getElementById('upBtn').innerText=t[lang].up;document.getElementById('downBtn').innerText=t[lang].down;document.getElementById('langBtn').innerText=t[lang].btn;if(!piUser)document.getElementById('loginBtn').innerText=t[lang].connect;}
-function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}
-applyLang();
-
+function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}applyLang();
 let points=parseInt(localStorage.getItem('pibulse_v2_pts')||'10');
 function renderPts(){document.getElementById('pts').innerText=points.toLocaleString('en-US');document.getElementById('bar').style.width=(points*10)+'%'}renderPts();
 
-// PI AUTH - ده اللي بيحدد الشخص الحقيقي
 async function loginPi(){
   try{
     document.getElementById('status').innerText='Opening Pi Wallet...';
-    const Pi = window.Pi;
     Pi.init({version:"2.0", sandbox:false});
-    const scopes = ['username','payments','wallet_address'];
-    const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-    piUser = {username: auth.user.username, uid: auth.user.uid, wallet: auth.user.wallet_address, accessToken: auth.accessToken};
-    localStorage.setItem('pibulse_user', JSON.stringify(piUser));
+    const auth=await Pi.authenticate(['username','payments','wallet_address'],()=>{});
+    piUser={username:auth.user.username,uid:auth.user.uid,wallet:auth.user.wallet_address,accessToken:auth.accessToken};
+    localStorage.setItem('pibulse_user',JSON.stringify(piUser));
     document.getElementById('userBadge').innerText=auth.user.username+' | '+auth.user.wallet_address.slice(0,4)+'...'+auth.user.wallet_address.slice(-4);
     document.getElementById('loginBtn').style.display='none';
-    document.getElementById('upBtn').classList.add('active'); document.getElementById('downBtn').classList.add('active');
-    document.getElementById('status').innerText=t[lang].connected+auth.user.username+' - '+t[lang].ready;
-  }catch(e){
-    document.getElementById('status').innerText='Login failed - Open in Pi Browser. Error: '+e.message;
-  }
+    document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');
+    document.getElementById('status').innerText='Connected @'+auth.user.username+' - '+t[lang].ready;
+    loadPiAd();
+  }catch(e){document.getElementById('status').innerText='Open in Pi Browser to connect wallet';}
 }
-function onIncompletePaymentFound(payment){console.log('incomplete',payment)}
 
 async function play(dir){
   if(!piUser){document.getElementById('status').innerText=t[lang].need;return;}
   if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}
-  try{
-    const res = await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username: piUser.username, wallet_address: piUser.wallet, uid: piUser.uid, accessToken: piUser.accessToken, dir: dir})});
-    const d = await res.json();
-    document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved for @'+piUser.username;
-  }catch(e){document.getElementById('status').innerText='✅ Saved locally';}
+  try{await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:piUser.username,wallet_address:piUser.wallet,uid:piUser.uid,dir})});document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved for @'+piUser.username;}catch(e){}
   points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();loadBoard();
 }
 
-async function fetchPi(){
+// PI AD NETWORK - ده اللي بيجيب ارباح
+function loadPiAd(){
   try{
-    let p=0; try{const r=await fetch('/api/price');const d=await r.json();if(d.price)p=d.price;else throw 0;}catch{const r2=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');const d2=await r2.json();p=d2['pi-network'].usd;}
-    document.getElementById('price').innerHTML='$'+p.toLocaleString('en-US',{minimumFractionDigits:4})+'<span style="font-size:11px;color:#00e676;display:block">● LIVE PI</span>';
-  }catch(e){document.getElementById('price').innerText='Loading...'}
+    if(window.Pi && Pi.Ads){
+      Pi.Ads.showAd('interstitial').then(()=>{document.getElementById('pi-ad-container').innerHTML='Pi Ad Shown ✅';}).catch(()=>{document.getElementById('pi-ad-container').innerHTML='Pi Ad Space - Your Ad Here';});
+    }else{
+      document.getElementById('pi-ad-container').innerHTML='Pi Ad Network Ready<br><span style="font-size:10px">Will show in Pi Browser</span>';
+    }
+  }catch(e){document.getElementById('pi-ad-container').innerHTML='Pi Ad Space';}
+}
+
+async function fetchPi(){
+  try{let p=0;try{const r=await fetch('/api/price');const d=await r.json();if(d.price)p=d.price;else throw 0;}catch{const r2=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');const d2=await r2.json();p=d2['pi-network'].usd;}document.getElementById('price').innerHTML='$'+p.toLocaleString('en-US',{minimumFractionDigits:4})+'<span style="font-size:11px;color:#00e676;display:block">● LIVE PI</span>';}catch{}
 }
 async function loadBoard(){
-  try{
-    const r=await fetch('/api/round');const d=await r.json();
-    let h='Round #'+d.roundId+' | Start $'+Number(d.roundStartPrice).toFixed(4)+'<br><br>';
-    if(d.predictions.length==0)h+='<span style="color:#666">No predictions yet</span>'; else d.predictions.slice(-5).forEach(x=>{h+='<div style="padding:6px 10px;background:#101015;border-radius:8px;margin-bottom:5px;font-size:11px;display:flex;justify-content:space-between"><span>@'+x.username+' ('+x.wallet_address.slice(0,4)+'...)</span><span style="color:'+(x.dir=='up'?'#00e676':'#ff5252')+'">'+x.dir.toUpperCase()+'</span></div>'});
-    document.getElementById('board').innerHTML=h;
-  }catch(e){}
+  try{const r=await fetch('/api/round');const d=await r.json();let h='Round #'+d.roundId+' | Start $'+Number(d.roundStartPrice).toFixed(4)+'<br><br>';if(d.predictions.length==0)h+='<span style="color:#666">No predictions yet</span>';else d.predictions.slice(-5).forEach(x=>{h+='<div style="padding:6px 10px;background:#101015;border-radius:8px;margin-bottom:5px;font-size:11px;display:flex;justify-content:space-between"><span>@'+x.username+'</span><span style="color:'+(x.dir=='up'?'#00e676':'#ff5252')+'">'+x.dir.toUpperCase()+'</span></div>'});document.getElementById('board').innerHTML=h;}catch{}
 }
-// auto restore
-try{const u=JSON.parse(localStorage.getItem('pibulse_user'));if(u){piUser=u;document.getElementById('userBadge').innerText=u.username+' | '+u.wallet.slice(0,4)+'...';document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');document.getElementById('status').innerText='Welcome back @'+u.username;}}catch{}
-fetchPi();loadBoard();setInterval(fetchPi,10000);setInterval(loadBoard,3000);
+try{const u=JSON.parse(localStorage.getItem('pibulse_user'));if(u){piUser=u;document.getElementById('userBadge').innerText=u.username+' | '+u.wallet.slice(0,4)+'...';document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');}}catch{}
+fetchPi();loadBoard();loadPiAd();setInterval(fetchPi,10000);setInterval(loadBoard,3000);
 let sec=60;setInterval(()=>{sec--;if(sec<=0)sec=60;document.getElementById('timer').innerText=t[lang].next+' '+sec.toString().padStart(2,'0')+'s'},1000);
 </script>
 </body>
