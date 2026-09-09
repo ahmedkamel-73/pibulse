@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PIBULSE - Real PI Prediction</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&family=Inter:wght@700;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <style>
 :root{--bg:#08080a;--pi:#7c4dff;--green:#00e676;--red:#ff5252}
@@ -20,19 +19,18 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 .progress{height:8px;background:#1e1e28;border-radius:99px;margin-top:12px;overflow:hidden}
 .progress i{display:block;height:100%;background:linear-gradient(90deg,var(--pi),#00e5ff);transition:.5s}
 .price{font-size:38px;font-weight:900;text-align:center;direction:ltr;margin:12px 0;min-height:60px;line-height:1.1}
+.price-change{font-size:12px;text-align:center;margin-top:-8px}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 .btn{padding:18px;border-radius:16px;border:0;font-size:16px;font-weight:900;cursor:pointer;transition:.2s;opacity:0.5;pointer-events:none}
 .btn.active{opacity:1;pointer-events:auto}
-.btn.locked{opacity:0.2;pointer-events:none;filter:grayscale(1)}
 .up{background:linear-gradient(180deg,#00e676,#00a152);color:#000}
 .down{background:linear-gradient(180deg,#ff5252,#b71c1c);color:#fff}
 .pi-login{width:100%;padding:16px;border-radius:14px;border:0;background:linear-gradient(90deg,var(--pi),#9c7cff);color:#fff;font-weight:900;font-size:14px;cursor:pointer;margin-top:14px}
 .status{margin-top:14px;padding:12px;border-radius:12px;background:#101015;border:1px dashed #2a2a38;color:#c7c7d1;font-size:12px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;direction:ltr}
-.status.warning{background:rgba(255,82,82,0.15);border-color:var(--red);color:#ffb4b4}
-.ad-box{margin-top:16px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.08);padding:0;overflow:hidden;text-align:center}
+.ad-box{margin-top:16px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.08);overflow:hidden;text-align:center}
 .footer{text-align:center;padding:20px;color:#666;font-size:11px;border-top:1px solid #1a1a24;margin-top:20px}
 .footer a{color:var(--pi);text-decoration:none;margin:0 8px}
-#adminPanel{display:none;background:rgba(124,77,255,0.2);border:2px solid var(--pi)}
+#adminPanel{display:none}
 </style>
 </head>
 <body>
@@ -41,99 +39,57 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 <div class="glass">
 <div style="text-align:center"><span class="badge" id="userBadge">Not Connected</span><span class="badge"><span id="ptsTxt">Points</span>: <span id="pts">10</span>/10</span></div>
 <div class="progress"><i id="bar" style="width:100%"></i></div>
-<div style="margin-top:16px"><div style="color:#9e9eaa;font-size:11px;text-align:center" id="liveTxt">● PI NETWORK - LIVE</div><div class="price" id="price">Loading PI Price...</div><div style="text-align:center;color:#00e5ff;font-weight:700;font-size:13px" id="timer">Syncing rounds...</div><div style="text-align:center;color:#999;font-size:10px;margin-top:4px" id="roundInfo">4 rounds / day - Cairo</div></div>
+<div style="margin-top:16px"><div style="color:#9e9eaa;font-size:11px;text-align:center" id="liveTxt">● PI NETWORK - LIVE</div><div class="price" id="price">$--.--</div><div class="price-change" id="priceChange"></div><div style="text-align:center;color:#00e5ff;font-weight:700;font-size:13px" id="timer">Next round: --</div><div style="text-align:center;color:#999;font-size:10px;margin-top:4px" id="roundInfo">4 rounds / day - Cairo (00,06,12,18)</div></div>
 <button class="pi-login" id="loginBtn" onclick="loginPi()">🔗 Connect Pi Wallet to Play</button>
 <div class="btns"><button class="btn up" id="upBtn" onclick="play('up')">📈 UP</button><button class="btn down" id="downBtn" onclick="play('down')">📉 DOWN</button></div>
 <div class="status" id="status">Connect Pi Wallet - Real wallet required</div>
 </div>
-
-<div class="glass" id="adminPanel">
-<h3 style="font-size:14px;margin-bottom:8px">👑 Admin Panel - ahmedkamel73</h3>
-<p style="font-size:11px;color:#a99cff;margin-bottom:10px">تظهر لك انت فقط</p>
-<button class="pi-login" onclick="testAdminPayment()" style="background:linear-gradient(90deg,#00e676,#00a152);color:#000">💸 اختبار الدفع 1 Test-Pi - للتحقق</button>
-<p id="adminStatus" style="font-size:11px;margin-top:8px;color:#00e676"></p>
+<div class="glass" id="adminPanel"><h3 style="font-size:12px">👑 Welcome Admin</h3><p style="font-size:11px;color:#a99cff" id="adminStatus">Mainnet Ready ✅</p></div>
+<div class="ad-box"><div style="font-size:10px;color:#a99cff;padding:6px;background:rgba(124,77,255,0.15)">Pi Ad Network</div><div id="pi-ad-container" style="min-height:70px;display:flex;align-items:center;justify-content:center;background:#0f0f14;color:#666;font-size:11px">Ad loading...</div></div>
+<div class="glass" style="padding:14px"><h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px">🏆 Live Round</h3><div id="board">No predictions yet</div></div>
 </div>
-
-<div class="ad-box">
-<div style="font-size:10px;color:#a99cff;padding:6px;background:rgba(124,77,255,0.15)">Pi Ad Network - Sponsored</div>
-<div id="pi-ad-container" style="min-height:90px;display:flex;align-items:center;justify-content:center;background:#0f0f14;color:#666;font-size:11px">Loading Pi Ad...</div>
-</div>
-<div class="glass" style="padding:14px"><h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px">🏆 Live Round - Transparent</h3><div id="board">No data yet</div></div>
-</div>
-<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE - Real Wallet + Pi Ads</footer>
+<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE</footer>
 <script>
 const MY_USERNAME = "ahmedkamel73";
-Pi.init({version:"2.0", sandbox:true});
+Pi.init({version:"2.0", sandbox:false});
 
 let lang=localStorage.getItem('pibulse_lang')||'en';
 let piUser=null;
-const t={en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',locked:'LOCKED - Waiting result',up:'📈 UP',down:'📉 DOWN',connect:'🔗 Connect Pi Wallet to Play',need:'Connect your Pi Wallet first',ready:'Wallet connected - Predict now!',btn:'العربية',noPts:'No points',warn5:'⚠️ 5 min left!',warn1:'⏰ 1 min left!'},ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'الجولة القادمة:',locked:'مقفولة - انتظار النتيجة',up:'📈 صعود',down:'📉 هبوط',connect:'🔗 اربط محفظة Pi للعب',need:'اربط محفظتك أولا',ready:'المحفظة مربوطة - توقع الآن',btn:'English',noPts:'انتهت النقاط',warn5:'⚠️ فاضل 5 دقايق!',warn1:'⏰ فاضل دقيقة!'}};
+const t={en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',locked:'LOCKED',up:'📈 UP',down:'📉 DOWN',connect:'🔗 Connect Pi Wallet to Play',need:'Connect wallet first',ready:'Ready!',btn:'العربية',noPts:'No points'},ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'القادمة:',locked:'مقفولة',up:'📈 صعود',down:'📉 هبوط',connect:'🔗 اربط محفظة Pi',need:'اربط محفظتك',ready:'جاهز',btn:'English',noPts:'انتهت النقاط'}};
 function applyLang(){document.getElementById('html').dir=lang=='ar'?'rtl':'ltr';document.getElementById('ptsTxt').innerText=t[lang].pts;document.getElementById('liveTxt').innerText=t[lang].live;document.getElementById('upBtn').innerText=t[lang].up;document.getElementById('downBtn').innerText=t[lang].down;document.getElementById('langBtn').innerText=t[lang].btn;if(!piUser)document.getElementById('loginBtn').innerText=t[lang].connect;}
 function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}applyLang();
 let points=parseInt(localStorage.getItem('pibulse_v2_pts')||'10');
 function renderPts(){document.getElementById('pts').innerText=points;document.getElementById('bar').style.width=(points*10)+'%'}renderPts();
 
-function onIncompletePaymentFound(payment){
-  return fetch("/api/payment/complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId:payment.identifier,txid:payment.transaction.txid})});
-}
-
+function onIncompletePaymentFound(p){return fetch("/api/payment/complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId:p.identifier,txid:p.transaction.txid})});}
 async function loginPi(){
-  try{
-    document.getElementById('status').innerText='Opening Pi Wallet...';
-    const auth=await Pi.authenticate(['username','payments','wallet_address'], onIncompletePaymentFound);
-    piUser={username:auth.user.username,uid:auth.user.uid,wallet:auth.user.wallet_address};
-    localStorage.setItem('pibulse_user',JSON.stringify(piUser));
-    document.getElementById('userBadge').innerText=auth.user.username;
-    document.getElementById('loginBtn').style.display='none';
-    document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');
-    document.getElementById('status').innerText='Connected @'+auth.user.username+' - '+t[lang].ready;
-    if(auth.user.username === MY_USERNAME){
-      document.getElementById('adminPanel').style.display='block';
-      document.getElementById('adminStatus').innerText='أهلا يا أدمن ✅';
-    }
-    loadPiAd();
-  }catch(e){
-    console.log(e);
-    document.getElementById('status').innerText='Failed to connect';
-    alert('Error: '+(e.message||JSON.stringify(e)));
+ try{document.getElementById('status').innerText='Opening Pi Wallet...';const auth=await Pi.authenticate(['username','payments','wallet_address'],onIncompletePaymentFound);piUser={username:auth.user.username,uid:auth.user.uid,wallet:auth.user.wallet_address};localStorage.setItem('pibulse_user',JSON.stringify(piUser));document.getElementById('userBadge').innerText='@'+auth.user.username;document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');document.getElementById('status').innerText='Connected @'+auth.user.username+' - '+t[lang].ready;if(auth.user.username===MY_USERNAME)document.getElementById('adminPanel').style.display='block';loadPiAd();}catch(e){document.getElementById('status').innerText='Failed';alert(e.message)}
+}
+async function play(dir){if(!piUser){document.getElementById('status').innerText=t[lang].need;return;}if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}try{await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:piUser.username,wallet:piUser.wallet,uid:piUser.uid,dir})});document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved';}catch{}points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();loadBoard();}
+
+// ==== السعر اللايف - متظبط 100% ====
+let lastPrice=0;
+async function fetchPi(){
+ try{
+  let price=null;
+  try{const r=await fetch('/api/price');const d=await r.json();if(d.price) price=Number(d.price);}catch{}
+  if(!price){
+   const cg=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd&include_24hr_change=true');
+   const j=await cg.json();
+   if(j['pi-network']?.usd){price=j['pi-network'].usd; window._change=j['pi-network'].usd_24h_change;}
   }
+  if(!price) throw 'no price';
+  document.getElementById('price').innerHTML='$'+price.toFixed(4);
+  if(lastPrice){const diff=((price-lastPrice)/lastPrice*100).toFixed(2);const col=price>=lastPrice?'#00e676':'#ff5252';document.getElementById('priceChange').innerHTML=`<span style="color:${col}">${price>=lastPrice?'▲':'▼'} ${diff}% (24h: ${window._change?window._change.toFixed(2)+'%':''})</span>`;}
+  lastPrice=price;
+ }catch(e){document.getElementById('price').innerHTML='$0.34 <span style="font-size:12px;color:#666">(offline)</span>';}
 }
-
-async function testAdminPayment(){
-  if(!piUser){ alert('سجل دخول الأول'); return; }
-  try{
-    document.getElementById('adminStatus').innerText='Creating payment...';
-    await Pi.createPayment({amount:1,memo:"PiBulse verification test",metadata:{admin:MY_USERNAME}},{
-      onReadyForServerApproval: async (paymentId)=>{
-        document.getElementById('adminStatus').innerText='Approving...';
-        await fetch("/api/payment/approve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId})});
-      },
-      onReadyForServerCompletion: async (paymentId,txid)=>{
-        await fetch("/api/payment/complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId,txid})});
-        document.getElementById('adminStatus').innerText='✅ نجح - روح اعمل Verify في Pi Portal';
-        alert('✅ الدفع نجح - ارجع Pi Portal ودوس Verify');
-      },
-      onCancel:()=>{document.getElementById('adminStatus').innerText='لغيت الدفع';},
-      onError:(e)=>{document.getElementById('adminStatus').innerText='خطأ: '+e;}
-    });
-  }catch(e){alert(e.message)}
-}
-
-async function play(dir){
-  if(!piUser){document.getElementById('status').innerText=t[lang].need;return;}
-  if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}
-  if(window.currentIsLocked){document.getElementById('status').innerText=t[lang].locked;return;}
-  try{await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:piUser.username,wallet_address:piUser.wallet,uid:piUser.uid,dir})});document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved';}catch(e){}
-  points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();loadBoard();
-}
-function loadPiAd(){try{if(window.Pi && Pi.Ads){Pi.Ads.showAd('interstitial').catch(()=>{});}}catch{}}
-async function fetchPi(){try{const r=await fetch('/api/price');const d=await r.json();if(d.price)document.getElementById('price').innerHTML='$'+Number(d.price).toFixed(4);}catch{}}
-let serverData=null;async function syncRound(){try{const r=await fetch('/api/round');const d=await r.json();serverData=d;window.currentIsLocked=d.isLocked;localStorage.setItem('pibulse_round_cache',JSON.stringify({data:d,fetchedAt:Date.now()}));}catch{const c=localStorage.getItem('pibulse_round_cache');if(c){try{serverData=JSON.parse(c).data;}catch{}}}}
-function updateTimerFromServer(){if(!serverData)return;const now=Date.now();let secLock=serverData.secondsUntilLock;if(serverData.lockTime)secLock=Math.floor((new Date(serverData.lockTime).getTime()-now)/1000);else if(serverData.fetchedAt){secLock-=Math.floor((now-serverData.fetchedAt)/1000);}const label=serverData.nextRoundCairo||"18:00";if(secLock>0&&!serverData.isLocked){const m=Math.floor(secLock/60);const s=secLock%60;document.getElementById('timer').innerText=t[lang].next+` ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;document.getElementById('roundInfo').innerText=`Round @ ${label} Cairo`;}else{document.getElementById('timer').innerText=t[lang].locked;}}
-async function loadBoard(){try{const r=await fetch('/api/round');const d=await r.json();let h='';(d.predictions||[]).slice(-5).forEach(x=>{h+=`<div style="padding:6px 10px;background:#101015;border-radius:8px;margin-bottom:5px;font-size:11px;display:flex;justify-content:space-between"><span>@${x.username}</span><span style="color:${x.dir=='up'?'#00e676':'#ff5252'}">${x.dir.toUpperCase()}</span></div>`});document.getElementById('board').innerHTML=h||'No predictions';}catch{}}
-try{const u=JSON.parse(localStorage.getItem('pibulse_user'));if(u){piUser=u;document.getElementById('userBadge').innerText=u.username;document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');if(u.username===MY_USERNAME)document.getElementById('adminPanel').style.display='block';}}catch{}
-fetchPi();syncRound();loadBoard();
-setInterval(fetchPi,10000);setInterval(syncRound,15000);setInterval(updateTimerFromServer,1000);setInterval(loadBoard,5000);
+function loadPiAd(){try{if(window.Pi?.Ads){Pi.Ads.isAdReady('interstitial').then(r=>{if(r.ready) Pi.Ads.showAd('interstitial').catch(()=>{document.getElementById('pi-ad-container').innerText='Ad not available yet - will show after approval';}); else document.getElementById('pi-ad-container').innerText='Pi Ads - Pending approval';}).catch(()=>{document.getElementById('pi-ad-container').innerText='Pi Ads - Pending approval';});}}catch{}}
+function getNextRound(){const rounds=[0,6,12,18];const now=new Date();const cairo=new Date(now.toLocaleString('en-US',{timeZone:'Africa/Cairo'}));let next=cairo;next.setMinutes(0,0,0);let h=rounds.find(r=>r>cairo.getHours());if(h===undefined){h=0;next.setDate(next.getDate()+1);}next.setHours(h);const diff=Math.floor((next - cairo)/1000);return {diff,label:`${String(h).padStart(2,'0')}:00`}}
+let roundTimer=setInterval(()=>{const {diff,label}=getNextRound();const m=Math.floor(diff/60);const s=diff%60;document.getElementById('timer').innerText=`${t[lang].next} ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;document.getElementById('roundInfo').innerText=`Round @ ${label} Cairo`;},1000);
+async function loadBoard(){try{const r=await fetch('/api/round');const d=await r.json();let h='';(d.predictions||[]).slice(-5).forEach(x=>{h+=`<div style="padding:6px 10px;background:#101015;border-radius:8px;margin-bottom:5px;font-size:11px;display:flex;justify-content:space-between"><span>@${x.username}</span><span style="color:${x.dir=='up'?'#00e676':'#ff5252'}">${x.dir.toUpperCase()}</span></div>`});if(h)document.getElementById('board').innerHTML=h;}catch{}}
+try{const u=JSON.parse(localStorage.getItem('pibulse_user'));if(u){piUser=u;document.getElementById('userBadge').innerText='@'+u.username;document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');if(u.username===MY_USERNAME)document.getElementById('adminPanel').style.display='block';}}catch{}
+fetchPi();loadBoard();setInterval(fetchPi,15000);setInterval(loadBoard,5000);
 </script>
 </body>
 </html>
