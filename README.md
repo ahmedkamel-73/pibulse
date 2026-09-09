@@ -1,19 +1,34 @@
-# PIBULSE - PI Prediction Game
+# PIBULSE - Pi Live Prediction Game
 
-Live PI price prediction - Skill based - Free
+Real-time, transparent, wallet-linked PI price prediction game built for Pi Network Hackathon 2026.
 
-## Structure
-- public/index.html - Game UI
-- public/manifest.json - Pi Browser
-- server/server.js - Cloudflare Worker (calculates winner automatically every 60s)
+## Features
+- LIVE PI price from CoinGecko (no demo)
+- Pi Wallet Authentication (username + wallet_address + uid)
+- Transparent winner calculation every 60s on Cloudflare Worker
+- Pi Ad Network integration (Pi.Ads)
+- Daily free points (10) - No Pi payment required - Skill based
+- Bilingual EN/AR, English digits
 
-## How winner calculated (Transparent)
-1. Server saves start price
-2. Users predict UP/DOWN
-3. After 60s server gets new price and auto awards XP
-4. Leaderboard public at /api/leaderboard
+## How winner is determined (Transparency)
+1. Server saves roundStartPrice
+2. Users connect Pi Wallet and predict UP/DOWN
+3. After 60s, server fetches new PI price
+4. If prediction matches price movement, +10 XP
+5. Leaderboard public at /api/round and /api/leaderboard
+6. Top winner wallet ready for Pi payment from App Wallet GD2C...RYDO
 
-## Deploy to Cloudflare Pages
-Connect GitHub repo, it will deploy automatically.
+## Tech
+- Frontend: public/index.html (Pi SDK 2.0)
+- Backend: server/server.js (Cloudflare Pages Functions)
+- APIs: /api/price, /api/predict, /api/round, /api/leaderboard
 
-Built for Pi Network Hackathon
+## Deployment
+Connect GitHub repo to Cloudflare Pages.
+Set env var: PI_API_KEY = your Pi API key from developer portal.
+Cron: Worker scheduled every 60s to close round and calculate winners.
+
+## Legal
+See /about.html and /terms.html
+
+Built for Pi - Skill based - Free - Transparent
