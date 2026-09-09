@@ -48,11 +48,10 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 <div class="ad-box"><div style="font-size:10px;color:#a99cff;padding:6px;background:rgba(124,77,255,0.15)">Pi Ad Network</div><div id="pi-ad-container" style="min-height:70px;display:flex;align-items:center;justify-content:center;background:#0f0f14;color:#666;font-size:11px">Ad loading...</div></div>
 <div class="glass" style="padding:14px"><h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px">🏆 Live Round</h3><div id="board">No predictions yet</div></div>
 </div>
-<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE</footer>
+<footer class="footer"><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/privacy.html">Privacy</a> | <a href="/api/leaderboard" target="_blank">API</a><br>© 2026 PIBULSE - Skill Based Predictions</footer>
 <script>
 const MY_USERNAME = "ahmedkamel73";
 Pi.init({version:"2.0", sandbox:false});
-
 let lang=localStorage.getItem('pibulse_lang')||'en';
 let piUser=null;
 const t={en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',locked:'LOCKED',up:'📈 UP',down:'📉 DOWN',connect:'🔗 Connect Pi Wallet to Play',need:'Connect wallet first',ready:'Ready!',btn:'العربية',noPts:'No points'},ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'القادمة:',locked:'مقفولة',up:'📈 صعود',down:'📉 هبوط',connect:'🔗 اربط محفظة Pi',need:'اربط محفظتك',ready:'جاهز',btn:'English',noPts:'انتهت النقاط'}};
@@ -60,14 +59,11 @@ function applyLang(){document.getElementById('html').dir=lang=='ar'?'rtl':'ltr';
 function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}applyLang();
 let points=parseInt(localStorage.getItem('pibulse_v2_pts')||'10');
 function renderPts(){document.getElementById('pts').innerText=points;document.getElementById('bar').style.width=(points*10)+'%'}renderPts();
-
 function onIncompletePaymentFound(p){return fetch("/api/payment/complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paymentId:p.identifier,txid:p.transaction.txid})});}
 async function loginPi(){
  try{document.getElementById('status').innerText='Opening Pi Wallet...';const auth=await Pi.authenticate(['username','payments','wallet_address'],onIncompletePaymentFound);piUser={username:auth.user.username,uid:auth.user.uid,wallet:auth.user.wallet_address};localStorage.setItem('pibulse_user',JSON.stringify(piUser));document.getElementById('userBadge').innerText='@'+auth.user.username;document.getElementById('loginBtn').style.display='none';document.getElementById('upBtn').classList.add('active');document.getElementById('downBtn').classList.add('active');document.getElementById('status').innerText='Connected @'+auth.user.username+' - '+t[lang].ready;if(auth.user.username===MY_USERNAME)document.getElementById('adminPanel').style.display='block';loadPiAd();}catch(e){document.getElementById('status').innerText='Failed';alert(e.message)}
 }
 async function play(dir){if(!piUser){document.getElementById('status').innerText=t[lang].need;return;}if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}try{await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:piUser.username,wallet:piUser.wallet,uid:piUser.uid,dir})});document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved';}catch{}points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();loadBoard();}
-
-// ==== السعر اللايف - متظبط 100% ====
 let lastPrice=0;
 async function fetchPi(){
  try{
