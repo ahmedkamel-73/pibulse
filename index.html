@@ -1,110 +1,109 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr" id="html">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIBULSE - Pulse of Pi</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<title>PIBULSE</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Inter:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <style>
-:root{--bg:#08080a;--card:#14141a;--pi:#7c4dff;--green:#00e676;--red:#ff1744;--gold:#ffca28}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+:root{--bg:#08080a;--pi:#7c4dff;--green:#00e676;--red:#ff1744;--gold:#ffca28}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Cairo',sans-serif}
 body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));color:#fff;min-height:100vh;padding-bottom:40px}
-.header{padding:24px;text-align:center}
-.logo{font-size:36px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#fff,var(--pi));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{color:#9e9eaa;margin-top:6px;font-size:14px}
+.header{padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:900;background:linear-gradient(90deg,#fff,var(--pi));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lang{background:#1e1e28;border:1px solid #2a2a38;color:#fff;padding:6px 12px;border-radius:99px;font-size:12px;cursor:pointer}
 .container{max-width:440px;margin:0 auto;padding:0 16px}
-.glass{background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:20px;margin-top:18px;box-shadow:0 20px 40px rgba(0,0,0,0.5)}
-.points-row{display:flex;justify-content:space-between;align-items:center}
-.badge{background:#1e1e28;border:1px solid #2a2a38;border-radius:999px;padding:6px 14px;font-size:13px;color:#bdbdc9}
+.glass{background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:20px;margin-top:10px;box-shadow:0 20px 40px rgba(0,0,0,0.5)}
+.badge{background:#1e1e28;border:1px solid #2a2a38;border-radius:999px;padding:6px 14px;font-size:12px;color:#bdbdc9;display:inline-block;margin:3px}
 .badge span{color:var(--gold);font-weight:700}
 .progress{height:8px;background:#1e1e28;border-radius:99px;margin-top:12px;overflow:hidden}
-.progress i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--pi),#00e5ff);transition:.5s}
-.price{font-size:42px;font-weight:900;margin:10px 0}
-.price small{font-size:16px;color:#9e9eaa}
-.timer{color:#00e5ff;font-weight:700;letter-spacing:1px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--pi),#00e5ff);transition:.5s}
+.price{font-size:36px;font-weight:900;margin:10px 0;text-align:center;direction:ltr}
+.timer{color:#00e5ff;font-weight:700;text-align:center}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
-.btn{padding:18px;border-radius:16px;border:0;font-size:18px;font-weight:900;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.btn:active{transform:scale(.96)}
-.up{background:linear-gradient(180deg,#00e676,#00a152);color:#000;box-shadow:0 10px 30px rgba(0,230,118,0.3)}
-.down{background:linear-gradient(180deg,#ff5252,#b71c1c);color:#fff;box-shadow:0 10px 30px rgba(255,23,68,0.3)}
-.status{margin-top:16px;padding:12px;border-radius:12px;background:#101015;border:1px dashed #2a2a38;color:#c7c7d1;font-size:14px;min-height:44px;display:flex;align-items:center;justify-content:center}
-.ad-box{margin-top:18px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.06);padding:16px;text-align:center;color:#a99cff;font-size:13px}
-.leader{margin-top:18px}
-.leader h3{font-size:14px;color:#9e9eaa;margin-bottom:10px}
-.row{display:flex;justify-content:space-between;padding:10px 12px;background:#101015;border-radius:12px;margin-bottom:8px;font-size:14px}
-.footer{margin-top:28px;text-align:center;color:#5a5a68;font-size:11px}
-.footer code{color:#7c7cff}
+.btn{padding:18px;border-radius:16px;border:0;font-size:16px;font-weight:900;cursor:pointer}
+.up{background:linear-gradient(180deg,#00e676,#00a152);color:#000}
+.down{background:linear-gradient(180deg,#ff5252,#b71c1c);color:#fff}
+.status{margin-top:16px;padding:12px;border-radius:12px;background:#101015;border:1px dashed #2a2a38;color:#c7c7d1;font-size:13px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center}
+.ad-box{margin-top:18px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.06);padding:14px;text-align:center;color:#a99cff;font-size:12px}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="logo">PIBULSE</div>
-  <div class="sub">توقع نبض السوق .. واكسب نقاط المهارة</div>
+  <button class="lang" onclick="toggleLang()" id="langBtn">العربية</button>
 </div>
 
 <div class="container">
   <div class="glass">
-    <div class="points-row">
-      <div class="badge">محفظة الجوائز: <span>GD2C...RYDO</span></div>
-      <div class="badge">نقاطك: <span id="pts">10</span>/10</div>
+    <div style="text-align:center">
+      <span class="badge">Prize Wallet: <span>GD2C...RYDO</span></span>
+      <span class="badge"><span id="ptsTxt">Points</span>: <span id="pts">10</span>/10</span>
     </div>
-    <div class="progress"><i id="bar"></i></div>
-    
-    <div style="text-align:center;margin-top:18px">
-      <div style="color:#9e9eaa;font-size:13px">BTC / USD</div>
-      <div class="price" id="price">$--.-- <small id="change">--</small></div>
-      <div class="timer" id="timer">الجولة القادمة: 60s</div>
+    <div class="progress"><i id="bar" style="width:100%"></i></div>
+    <div style="margin-top:16px">
+      <div style="color:#9e9eaa;font-size:12px;text-align:center" id="liveTxt">BTC / USD - Live from CoinGecko</div>
+      <div class="price" id="price">Loading...</div>
+      <div class="timer" id="timer">Next round: 60s</div>
     </div>
-
     <div class="btns">
-      <button class="btn up" onclick="play('up')">📈 صعود</button>
-      <button class="btn down" onclick="play('down')">📉 هبوط</button>
+      <button class="btn up" onclick="play('up')" id="upBtn">📈 UP</button>
+      <button class="btn down" onclick="play('down')" id="downBtn">📉 DOWN</button>
     </div>
-    <div class="status" id="status">جاهز للتوقع المجاني؟ لا يوجد دفع Pi هنا - مهارة فقط</div>
+    <div class="status" id="status">Ready? Free skill-based prediction - No Pi payment</div>
   </div>
 
-  <div class="ad-box">
-    Pi Ad Network<br>
-    <small>مساحة إعلانية رسمية - تزيد أرباحك بـ Pi</small>
-    <div id="pi-ad-slot" style="margin-top:8px;height:50px;background:rgba(0,0,0,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center">Ad Loading...</div>
-  </div>
+  <div class="ad-box">Pi Ad Network - Official Ad Space<div style="margin-top:6px;height:40px;background:rgba(0,0,0,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center">Ad Loading...</div></div>
 
-  <div class="glass leader">
-    <h3>🏆 ليدربورد المهارة (Top Accuracy)</h3>
-    <div class="row"><span>🥇 ahmed.pi</span><span>94% دقة</span></div>
-    <div class="row"><span>🥈 sara.pi</span><span>91% دقة</span></div>
-    <div class="row"><span>🥉 you</span><span id="acc">0% دقة</span></div>
-  </div>
-
-  <div class="footer">
-    مبني لمجتمع Pi Network - نظام نقاط مجاني 100%<br>
-    <code>App Wallet: GD2CLBUZ...EDBRYDO</code>
+  <div class="glass">
+    <h3 style="font-size:13px;color:#9e9eaa;margin-bottom:8px" id="boardTxt">🏆 Skill Leaderboard</h3>
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;background:#101015;border-radius:12px;margin-bottom:6px;font-size:13px"><span>🥇 ahmed.pi</span><span>94% acc</span></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;background:#101015;border-radius:12px;font-size:13px"><span>🥈 you</span><span id="acc">0% acc</span></div>
   </div>
 </div>
 
 <script>
-let points = parseInt(localStorage.getItem('pibulse_v2_pts') || '10');
-let acc = 0;
+let lang = localStorage.getItem('pibulse_lang') || 'en';
+const t = {
+  en:{pts:'Points',live:'BTC / USD - Live from CoinGecko',next:'Next round:',up:'📈 UP',down:'📉 DOWN',ready:'Ready? Free skill-based prediction - No Pi payment',board:'🏆 Skill Leaderboard',btn:'العربية',noPts:'No points left today! Come back tomorrow'},
+  ar:{pts:'نقاطك',live:'BTC / USD - مباشر من CoinGecko',next:'الجولة القادمة:',up:'📈 صعود',down:'📉 هبوط',ready:'جاهز؟ توقع مجاني بالمهارة - بدون دفع Pi',board:'🏆 ليدربورد المهارة',btn:'English',noPts:'انتهت نقاط اليوم! ارجع بكرة'}
+};
+function applyLang(){
+  document.getElementById('html').dir = lang=='ar'?'rtl':'ltr';
+  document.getElementById('html').lang = lang;
+  document.getElementById('ptsTxt').innerText = t[lang].pts;
+  document.getElementById('liveTxt').innerText = t[lang].live;
+  document.getElementById('upBtn').innerText = t[lang].up;
+  document.getElementById('downBtn').innerText = t[lang].down;
+  document.getElementById('status').innerText = t[lang].ready;
+  document.getElementById('boardTxt').innerText = t[lang].board;
+  document.getElementById('langBtn').innerText = t[lang].btn;
+  document.getElementById('timer').dataset.lang = lang;
+}
+function toggleLang(){ lang = lang=='en'?'ar':'en'; localStorage.setItem('pibulse_lang',lang); applyLang(); }
+applyLang();
+
+let points = parseInt(localStorage.getItem('pibulse_v2_pts')||'10');
 function renderPts(){document.getElementById('pts').innerText=points;document.getElementById('bar').style.width=(points*10)+'%'}
 renderPts();
-
 function play(dir){
-  if(points<=0){document.getElementById('status').innerText='انتهت نقاط اليوم المجانية! ارجع بكرة الساعة 12';return;}
+  if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}
   points--; localStorage.setItem('pibulse_v2_pts',points); renderPts();
-  document.getElementById('status').innerText='✅ تم تسجيل توقعك: '+(dir=='up'?'صعود':'هبوط')+' - انتظر النتيجة (نظام مهارة)';
-  // هنا هنربط السيرفر بعدين
+  document.getElementById('status').innerText='✅ '+(dir=='up'?t[lang].up:t[lang].down)+' - '+t[lang].ready;
 }
-
-// سعر وهمي متحرك عشان الشكل مبهر لحد ما نربط API
-let p=67234.12;
-setInterval(()=>{
-  p+= (Math.random()-0.5)*40;
-  document.getElementById('price').innerHTML='$'+p.toFixed(2)+' <small style="color:'+(Math.random()>0.5?'#00e676':'#ff5252')+'">'+(Math.random()>0.5?'+':'-')+(Math.random()*2).toFixed(2)+'%</small>';
-},1500);
-
-let sec=60;
-setInterval(()=>{sec--; if(sec<=0)sec=60; document.getElementById('timer').innerText='الجولة القادمة: '+sec+'s'},1000);
+async function fetchPrice(){
+  try{
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    const data = await res.json();
+    document.getElementById('price').innerHTML='$'+data.bitcoin.usd.toLocaleString()+' <small style="color:'+(data.bitcoin.usd_24h_change>=0?'#00e676':'#ff5252')+'">'+data.bitcoin.usd_24h_change.toFixed(2)+'%</small>';
+  }catch(e){
+    const r2 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'); const d2=await r2.json();
+    document.getElementById('price').innerHTML='$'+parseFloat(d2.price).toLocaleString();
+  }
+}
+fetchPrice(); setInterval(fetchPrice,10000);
+let sec=60; setInterval(()=>{sec--; if(sec<=0)sec=60; document.getElementById('timer').innerText=t[document.getElementById('timer').dataset.lang||'en'].next+' '+sec+'s'},1000);
 </script>
 </body>
 </html>
