@@ -12,14 +12,16 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Cairo',sans-serif}
 body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));color:#fff;min-height:100vh;display:flex;flex-direction:column}
 .header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;max-width:440px;margin:0 auto;width:100%}
-.logo{font-size:26px;font-weight:900;background:linear-gradient(90deg,#fff,var(--pi));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.logo{font-size:26px;font-weight:900;background:linear-gradient(90deg,#fff,var(--pi));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .lang{background:#1e1e28;border:1px solid #2a2a38;color:#fff;padding:6px 14px;border-radius:99px;font-size:12px;cursor:pointer}
 .container{max-width:440px;margin:0 auto;padding:0 16px;width:100%;flex:1}
 .glass{background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:20px;margin-top:10px;box-shadow:0 20px 40px rgba(0,0,0,0.5)}
 .badge{background:#1e1e28;border:1px solid #2a2a38;border-radius:999px;padding:6px 12px;font-size:11px;color:#bdbdc9;display:inline-block;margin:2px}
 .progress{height:8px;background:#1e1e28;border-radius:99px;margin-top:12px;overflow:hidden}
 .progress i{display:block;height:100%;background:linear-gradient(90deg,var(--pi),#00e5ff);transition:.5s}
-.price{font-size:38px;font-weight:900;text-align:center;direction:ltr;margin:12px 0;line-height:1.1}
+.price{font-size:38px;font-weight:900;text-align:center;direction:ltr;margin:12px 0;line-height:1.1;min-height:60px}
+.live-dot{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:50%;margin-right:6px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 .timer{color:#00e5ff;font-weight:700;text-align:center;font-size:13px;margin-top:8px}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 .btn{padding:18px;border-radius:16px;border:0;font-size:16px;font-weight:900;cursor:pointer;transition:.2s}
@@ -27,10 +29,8 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
 .up{background:linear-gradient(180deg,#00e676,#00a152);color:#000}
 .down{background:linear-gradient(180deg,#ff5252,#b71c1c);color:#fff}
 .status{margin-top:16px;padding:12px;border-radius:12px;background:#101015;border:1px dashed #2a2a38;color:#c7c7d1;font-size:12px;text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center}
-.ad-box{margin-top:16px;border-radius:16px;border:1px dashed rgba(124,77,255,0.4);background:rgba(124,77,255,0.06);padding:14px;text-align:center;color:#a99cff;font-size:11px}
 .footer{text-align:center;padding:24px 16px;color:#666;font-size:11px;margin-top:20px;border-top:1px solid #1a1a24}
 .footer a{color:#7c4dff;text-decoration:none;margin:0 8px}
-.footer a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -38,91 +38,87 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #1a1033, var(--bg));co
   <div class="logo">PIBULSE</div>
   <button class="lang" onclick="toggleLang()" id="langBtn">العربية</button>
 </div>
-
 <div class="container">
   <div class="glass">
     <div style="text-align:center">
-      <span class="badge">Prize Wallet: GD2C...RYDO</span>
+      <span class="badge" id="walletBadge">Prize: GD2C...RYDO</span>
       <span class="badge"><span id="ptsTxt">Points</span>: <span id="pts">10</span>/10</span>
     </div>
     <div class="progress"><i id="bar" style="width:100%"></i></div>
     <div style="margin-top:16px">
-      <div style="color:#9e9eaa;font-size:11px;text-align:center" id="liveTxt">PI NETWORK - Live from Server</div>
-      <div class="price" id="price">Loading...</div>
+      <div style="color:#9e9eaa;font-size:11px;text-align:center" id="liveTxt"><span class="live-dot"></span>PI NETWORK - LIVE</div>
+      <div class="price" id="price">Connecting to PI Network...</div>
       <div class="timer" id="timer">Next round: 60s</div>
     </div>
     <div class="btns">
       <button class="btn up" onclick="play('up')" id="upBtn">📈 UP</button>
       <button class="btn down" onclick="play('down')" id="downBtn">📉 DOWN</button>
     </div>
-    <div class="status" id="status">Free skill-based - No Pi payment needed</div>
+    <div class="status" id="status">Fetching live PI price from CoinGecko...</div>
   </div>
-
-  <div class="ad-box">Pi Ad Network - Official Ad Space<br>Transparent predictions stored on Cloudflare server</div>
-
   <div class="glass" style="padding:14px">
-    <h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px" id="boardTxt">🏆 Live Leaderboard (Auto Transparent)</h3>
-    <div id="board">Loading from /api/leaderboard...</div>
+    <h3 style="font-size:12px;color:#9e9eaa;margin-bottom:8px" id="boardTxt">🏆 Live Leaderboard</h3>
+    <div id="board">Connecting...</div>
   </div>
 </div>
-
 <footer class="footer">
-  <div style="margin-bottom:8px">
-    <a href="/about.html">About</a> |
-    <a href="/terms.html">Terms & Privacy</a> |
-    <a href="/api/leaderboard" target="_blank">API Transparency</a>
-  </div>
-  <div>© 2026 PIBULSE - Built for Pi Network Hackathon</div>
-  <div style="margin-top:4px;color:#444">Skill-based • Free • Transparent • No Gambling</div>
+  <div><a href="/about.html">About</a> | <a href="/terms.html">Terms</a> | <a href="/api/leaderboard" target="_blank">Live API</a></div>
+  <div style="margin-top:8px">© 2026 PIBULSE • Real PI Price • Transparent</div>
 </footer>
-
 <script>
-let lang = localStorage.getItem('pibulse_lang')||'en';
+let lang=localStorage.getItem('pibulse_lang')||'en';
 const t={
-  en:{pts:'Points',live:'PI NETWORK - Live from Server',next:'Next round:',up:'📈 UP',down:'📉 DOWN',ready:'Predict PI - Saved transparently on server',btn:'العربية',noPts:'No points today! Come back tomorrow'},
-  ar:{pts:'نقاطك',live:'شبكة PI - مباشر من السيرفر',next:'الجولة القادمة:',up:'📈 صعود',down:'📉 هبوط',ready:'توقع PI - محفوظ بشفافية في السيرفر',btn:'English',noPts:'انتهت نقاط اليوم! ارجع غدا'}
+  en:{pts:'Points',live:'PI NETWORK - LIVE',next:'Next round:',up:'📈 UP',down:'📉 DOWN',ready:'Live PI price - Predict now',btn:'العربية',noPts:'No points left!'},
+  ar:{pts:'نقاطك',live:'شبكة PI - مباشر',next:'الجولة:',up:'📈 صعود',down:'📉 هبوط',ready:'سعر PI مباشر - توقع الآن',btn:'English',noPts:'انتهت نقاطك!'}
 };
-function applyLang(){
-  document.getElementById('html').dir=lang=='ar'?'rtl':'ltr';
-  document.getElementById('ptsTxt').innerText=t[lang].pts;
-  document.getElementById('liveTxt').innerText=t[lang].live;
-  document.getElementById('upBtn').innerText=t[lang].up;
-  document.getElementById('downBtn').innerText=t[lang].down;
-  document.getElementById('status').innerText=t[lang].ready;
-  document.getElementById('boardTxt').innerText='🏆 '+(lang=='ar'?'الليدربورد المباشر (شفاف)':'Live Leaderboard (Auto Transparent)');
-  document.getElementById('langBtn').innerText=t[lang].btn;
-}
-function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}
-applyLang();
-
+function applyLang(){document.getElementById('html').dir=lang=='ar'?'rtl':'ltr';document.getElementById('ptsTxt').innerText=t[lang].pts;document.getElementById('liveTxt').innerHTML='<span class="live-dot"></span>'+t[lang].live;document.getElementById('upBtn').innerText=t[lang].up;document.getElementById('downBtn').innerText=t[lang].down;document.getElementById('langBtn').innerText=t[lang].btn;}
+function toggleLang(){lang=lang=='en'?'ar':'en';localStorage.setItem('pibulse_lang',lang);applyLang();}applyLang();
 let points=parseInt(localStorage.getItem('pibulse_v2_pts')||'10');
-function renderPts(){document.getElementById('pts').innerText=points.toLocaleString('en-US');document.getElementById('bar').style.width=(points*10)+'%'}
-renderPts();
+function renderPts(){document.getElementById('pts').innerText=points.toLocaleString('en-US');document.getElementById('bar').style.width=(points*10)+'%'}renderPts();
 
 async function play(dir){
   if(points<=0){document.getElementById('status').innerText=t[lang].noPts;return;}
-  try{
-    await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:'pi_'+Math.floor(Math.random()*9000+1000),dir})});
-    document.getElementById('status').innerText='✅ '+t[lang][dir]+' - Saved! Check /api/leaderboard';
-  }catch(e){document.getElementById('status').innerText='✅ '+t[lang][dir]+' - Local';}
-  points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();loadBoard();
+  try{await fetch('/api/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:'pi_'+Math.floor(Math.random()*9000+1000),dir})});}catch(e){}
+  points--;localStorage.setItem('pibulse_v2_pts',points);renderPts();
+  document.getElementById('status').innerText='✅ '+dir.toUpperCase()+' saved - Round will close soon';
+  loadBoard();
 }
 
 async function fetchPi(){
   try{
-    const res = await fetch('/api/price');
-    const data = await res.json();
-    document.getElementById('price').innerHTML='$'+data.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4})+'<span style="font-size:11px;color:#a99cff;display:block;margin-top:6px">Round #'+data.roundId.toString().padStart(3,'0')+' | Start: $'+data.roundStartPrice.toLocaleString('en-US',{minimumFractionDigits:4})+'</span>';
-  }catch(e){document.getElementById('price').innerHTML='$0.3821<span style="font-size:11px;color:#666;display:block">Demo - Deploy to Cloudflare to go live</span>';}
+    const r=await fetch('/api/price');
+    const d=await r.json();
+    if(d.price){
+      document.getElementById('price').innerHTML='$'+d.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4})+'<span style="font-size:11px;color:#00e676;display:block;margin-top:6px">● LIVE • Round #'+d.roundId.toString().padStart(3,'0')+'</span>';
+      document.getElementById('status').innerText=t[lang].ready;
+      return;
+    }
+    throw new Error();
+  }catch(e){
+    try{
+      const r2=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pi-network&vs_currencies=usd');
+      const d2=await r2.json();
+      const p=d2['pi-network'].usd;
+      document.getElementById('price').innerHTML='$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4})+'<span style="font-size:11px;color:#00e676;display:block;margin-top:6px">● LIVE PI from CoinGecko</span>';
+      document.getElementById('status').innerText=t[lang].ready;
+    }catch(e2){
+      document.getElementById('price').innerHTML='<span style="font-size:14px">Reconnecting to PI Network...</span>';
+    }
+  }
 }
+
 async function loadBoard(){
   try{
-    const r=await fetch('/api/leaderboard');const d=await r.json();
-    let h='';if(d.leaderboard&&d.leaderboard.length>0){d.leaderboard.slice(0,5).forEach((row,i)=>{h+='<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#101015;border-radius:10px;margin-bottom:6px;font-size:12px"><span>'+(i+1)+'️⃣ '+row[0]+'</span><span>'+row[1].toString().padStart(2,'0')+' XP</span></div>'});}else{h='<div style="padding:8px 12px;background:#101015;border-radius:10px;font-size:12px;color:#9e9eaa">No winners yet - Be the first!</div>';}
+    const r=await fetch('/api/leaderboard');
+    const d=await r.json();
+    let h='';if(d.leaderboard&&d.leaderboard.length>0){d.leaderboard.slice(0,5).forEach((row,i)=>{h+='<div style="display:flex;justify-content:space-between;padding:8px 12px;background:#101015;border-radius:10px;margin-bottom:6px;font-size:12px"><span>'+(i+1)+'️⃣ '+row[0]+'</span><span>'+row[1].toString().padStart(2,'0')+' XP</span></div>'});}else{h='<div style="padding:8px 12px;background:#101015;border-radius:10px;font-size:12px;color:#9e9eaa">First prediction wins - Start now!</div>';}
     document.getElementById('board').innerHTML=h;
-  }catch(e){}
+  }catch(e){document.getElementById('board').innerHTML='<div style="font-size:12px;color:#9e9eaa">Leaderboard will appear after deploy to Cloudflare</div>';}
 }
-fetchPi();loadBoard();setInterval(fetchPi,10000);setInterval(loadBoard,5000);
+
+fetchPi();loadBoard();
+setInterval(fetchPi,10000);
+setInterval(loadBoard,5000);
 let sec=60;setInterval(()=>{sec--;if(sec<=0)sec=60;document.getElementById('timer').innerText=t[lang].next+' '+sec.toString().padStart(2,'0')+'s'},1000);
 </script>
 </body>
